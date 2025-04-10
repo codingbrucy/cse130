@@ -5,10 +5,20 @@
 #include <sys/types.h>
 
 int main() {
-    /* TODO: Create a child process.
-             If successful, the parent process should print even numbers from 0 to 10 and
-             the child process should print odd numbers from 1 to 9.
-             If unsuccessful, print an error message and return -1. */
-    
+    pid_t childval = fork();
+    if(childval> 0 ){
+        // we in parent process!
+        printf("hail from parent process, pid: %d \n",getpid());
+        for(int i = 1; i<10; i+=2){
+            printf("%d, ",i);
+        }
+        printf("\n");
+    }
+    else{
+        printf("hail from child process, pid: %d \n",getpid());
+        for(int i = 0; i<=10; i+=2){
+            printf("%d, ",i);
+        }
+    }
     return 0;
 }
