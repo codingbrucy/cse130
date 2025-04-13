@@ -5,15 +5,11 @@
 
 int my_exec(void); 
 int main(void){
+    printf("A");
 
-    pid_t forkval = fork();
-    // spwans child!
-    // if forkval == 0 : in child
-    // if forval >0, in parent
-
-    // pid_t wait(int *status) <- returns id of dead child
-    // pid_t waitpid(pid_t pid, int *status, int options)
-    printf("The value = %d\n", forkval);
+    fork();
+    printf("B");
+    
 }
 
 int my_exec(void){
