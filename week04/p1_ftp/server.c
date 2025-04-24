@@ -72,9 +72,13 @@ void handleNewConnection(int chatSocket) {
       checkError(status);
       c.code = ntohl(c.code);
       switch(c.code){
-         case CC_LS: {
+         case CC_LS: { // ls
             Payload p;
+
+            //list the files in the current directory. compose a message
             char* msg = makeFileList(".");
+
+            // send the payload header 
             p.code = htonl(PL_TXT);
             p.length = htonl(strlen(msg)+1);
             status = send(chatSocket,&p,sizeof(Payload),0);
@@ -87,6 +91,7 @@ void handleNewConnection(int chatSocket) {
             }
             free(msg);
          }break;
+
          case CC_GET: { // send the named file back to client			
             Payload p;
             int fileSize = getFileSize(c.arg);
@@ -97,6 +102,7 @@ void handleNewConnection(int chatSocket) {
             sendFileOverSocket(c.arg,chatSocket);
             printf("File [%s] sent\n",c.arg);
          }break; 
+         
          case CC_PUT: {// save locally a named file sent by the client
             Payload p;
             status = recv(chatSocket,&p,sizeof(p),0);
