@@ -36,7 +36,7 @@ char* readResponse(int sid) {
       }
    }
    if (received == sz)
-      buf = realloc(buf,sz + 1);
+      buf = realloc(buf,sz + 1); // very rare case
    buf[received] = 0;
    return buf;
 }
@@ -59,8 +59,46 @@ int main(int argc,char* argv[]) {
     * A helper function is given to readResponse.
     * Print the response on stdout.
    */
+   int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+   checkError(sockfd, __LINE__);
+
+   struct hostent *he = gethostbyname(host);
+   if (!he) {
+      fprintf(stderr, "gethostbyname failed for %s\n", host);
+      close(sockfd);
+      return 1;
+   }
    
+
+   struct sockaddr_in servaddr;
+   memset(&servaddr, 0, sizeof(servaddr));
+   servaddr.sin_family = AF_INET;
+   servaddr.sin_port   = htons(port);
+   memcpy(&servaddr.sin_addr,
+          he->h_addr_list[0],
+          he->h_length);
+
+   //Connect
+   int conn = connect(sockfd,
+                      (struct sockaddr*)&servaddr,
+                      sizeof(servaddr));
+   checkError(conn, __LINE__);
+
+   // Send GET 
+   char request[1024];
+   snprintf(request, sizeof(request), "GET %s\n", url);
+   int sent = send(sockfd, request, strlen(request), 0);
+   checkError(sent, __LINE__);
+
+   char *response = readResponse(sockfd);
+   printf("%s", response);
+
+   //Cleanup
+   free(response);
+   close(sockfd);
    return 0;
+
+
 }
 
 
