@@ -32,7 +32,9 @@ int main(int argc,char* argv[])  {
    struct hostent *server = gethostbyname("localhost");
    srv.sin_family = AF_INET;
    srv.sin_port   = htons(9093);
-   memcpy(&srv.sin_addr.s_addr,server->h_addr,server->h_length);
+
+   // well.... issue here <------------
+   memcpy(&srv.sin_addr.s_addr,server->h_addr_list[0],server->h_length);
    int status = connect(sid,(struct sockaddr*)&srv,sizeof(srv));
    checkError(status,__LINE__);
 
